@@ -1,0 +1,57 @@
+/* CSS tùy chỉnh cho DataGrid */
+.custom-datagrid {
+    height: 400px;
+    width: 100%;
+  }
+  
+  /* CSS tùy chỉnh cho các ô dữ liệu */
+  .custom-datagrid .MuiDataGrid-cell {
+    padding: 8px;
+  }
+  
+  /* CSS tùy chỉnh cho tiêu đề cột */
+  .custom-datagrid .MuiDataGrid-colCell {
+    font-weight: bold;
+    background-color: #f0f0f0;
+  }
+  
+  /* CSS tùy chỉnh cho hàng được chọn */
+  .custom-datagrid .Mui-selected {
+    background-color: #e0e0e0;
+  }
+  .btnUpdate{
+    width: 80px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: black;
+  }  .btnSearch{
+
+    width: 45px;
+    height: 45px;
+border: none; 
+    outline: none;
+    background: transparent;
+    color:rgb(7, 11, 230);
+  
+
+}
+  .btnDelete{
+    width: 80px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: red;
+  }
+  .btnCreate{
+    width: 45px;
+    height: 45px;
+    
+    outline: none;
+    background: transparent;
+    color:green;
+  }
+
+  .MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows {
+    margin: 0 auto !important;
+  }
