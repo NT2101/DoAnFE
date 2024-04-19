@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './style.scss';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const AddTopic = () => {
   const [listTeacher, setListTeacher] = useState([]);
   const [listTopicType, setListTopicType] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     studentID: '',
     name: '',
@@ -25,7 +29,7 @@ const AddTopic = () => {
       // Lấy tên sinh viên từ userData và cập nhật vào state
       setFormData((prevFormData) => ({
         ...prevFormData,
-        studentID: userData.studentInfo.name, // hoặc userData.studentInfo.name tùy vào cấu trúc dữ liệu
+        studentID: userData.studentInfo.studentID, // hoặc userData.studentInfo.name tùy vào cấu trúc dữ liệu
       }));
     }
   }, []);
@@ -62,15 +66,17 @@ const AddTopic = () => {
       .post('https://localhost:7109/api/Topics/Create', formData)
       .then((response) => {
         console.log('Topic created:', response.data);
-        // Reset form after successful submission
         setFormData({
-          ...formData,
-          name: '',
+          name: '',  
+          studentID:'',
           teacherID: '',
           topicTypeID: '',
           description: '',
           topicYear: new Date().getFullYear(),
         });
+        enqueueSnackbar('Đăng ký đề tài thành công!', { variant: 'success' });
+        navigate('/');
+        
       })
       .catch((error) => {
         console.error('Error creating topic:', error);
@@ -78,7 +84,7 @@ const AddTopic = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form-container" >
       <form onSubmit={handleSubmit}>
         <h2>Thêm đề tài</h2>
         <div className="form-group mt-10 col-md-6">

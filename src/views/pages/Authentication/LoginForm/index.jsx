@@ -49,7 +49,7 @@ const LoginForm = () => {
             navigate('/ChangePassword', { state: { userData } });
           } else if (userData.account.status == 2) {
             console.log('Navigating to CreateTopic...');
-            navigate('/CreateTopic');
+            navigate('/DetailTopicType');
           } else {
             enqueueSnackbar('Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.',{variant:'error'});
           }
@@ -77,9 +77,7 @@ const LoginForm = () => {
         // Nếu RoleID là 1 (ví dụ: học sinh), chuyển hướng đến trang đổi mật khẩu
         navigate('/ChangePassword');
       } else {
-        // Nếu không có quyền truy cập (RoleID không hợp lệ), hiển thị thông báo lỗi
-        enqueueSnackbar({variant:'error'});
-
+      
       }
     }
   }, []);

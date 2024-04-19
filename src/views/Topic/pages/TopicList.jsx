@@ -36,7 +36,6 @@ const ListTopic = () => {
       setListTopic(response.data);
     } catch (error) {
       console.error('Error fetching topic data:', error);
-      console.log(response.data)
     }
   };
 

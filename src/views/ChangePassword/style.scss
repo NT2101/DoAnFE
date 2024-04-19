@@ -1,13 +1,14 @@
 .form-changepassword {
+    margin-top: 100px;
     display: flex;
     justify-content: center; /* Hiển thị form ở giữa màn hình theo chiều ngang */
     align-items: center; /* Hiển thị form ở giữa màn hình theo chiều dọc */
-    height: 100vh; /* Chiều cao 100% của viewport */
+    height: 500px; /* Chiều cao 100% của viewport */
   }
   
   .body {
-    width: 500px; /* Độ rộng của form */
-    height: 330px; /* Độ cao của form */
+    width: 300px; /* Độ rộng của form */
+    height: 300px; /* Độ cao của form */
   }
   
   .ChangePasswordTitle {
@@ -24,6 +25,6 @@
   }
   
   .CButton {
-    width: 100%;
+    width: 50px;
     margin-top: 20px;
   }

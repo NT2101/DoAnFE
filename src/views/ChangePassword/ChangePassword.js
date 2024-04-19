@@ -23,13 +23,7 @@ const ChangePasswordForm = () => {
     }
   }, []);
   
-  useEffect(() => {
-    const loginSuccess = localStorage.getItem('loginSuccess');
-    if (!loginSuccess || loginSuccess !== 'true') {
-      setError('Unauthorized. Please login again.');
-      navigate('/login');
-    }
-  }, [navigate]);
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,13 +38,6 @@ const ChangePasswordForm = () => {
       const user = JSON.parse(userData);
       const userId = user.account.id;
   
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        setError('Unauthorized. Please login again.');
-        navigate('/login');
-        return;
-      }
-  
       const response = await axios.post(
         'https://localhost:7109/api/accounts/ChangePassword',
         {
@@ -58,11 +45,7 @@ const ChangePasswordForm = () => {
           CurrentPassword: currentPassword,
           NewPassword: newPassword,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        
       );
   
       localStorage.removeItem('loginSuccess');
@@ -77,7 +60,7 @@ const ChangePasswordForm = () => {
       showNotification('Đổi mật khẩu thành công!', 'success');
   
       // Chuyển hướng đến trang TopicDetail sau khi đổi mật khẩu thành công
-      navigate('/');
+      navigate('/DetailTopicType');
     } catch (error) {
       console.error('Change password error:', error);
   
@@ -95,8 +78,8 @@ const ChangePasswordForm = () => {
   };
   
   return (
-    <CRow className="justify-content-center">
-      <CCol md={6}>
+    <CRow className="form-changepassword">
+      <CCol md={3}>
         <CCard>
           <CCardBody>
             <CForm onSubmit={handleSubmit}>
@@ -123,7 +106,7 @@ const ChangePasswordForm = () => {
                   required
                 />
               </CInputGroup>
-              <CButton color="primary" className="w-100" type="submit">
+              <CButton color="primary" className="w-30" type="submit">
                 Xác nhận
               </CButton>
               {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
