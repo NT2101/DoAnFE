@@ -1,111 +1,151 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { DataGrid } from '@mui/x-data-grid';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
-import setting from '../../../setting.js';
-import {
-
-    CFormInput,
-
-    CInputGroup,
-
-    CInputGroupText,
-  
-  } from '@coreui/react'
-import './style.scss';
 import { useNavigate } from 'react-router-dom';
-const ListStudentDetalt = (props) => {
-  const [listStudent, setListStudent] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [action, setAction] = useState('');
-  const [formData, setFormData] = useState({
-    StudentID: '',
-    Name: '',
-    Dob: '',
-    Sex: '',
-    Address: '',
-    PhoneNumber: '',
-    EmailAddress: '',
-    Country: '',
-    ImageUrl: '',
-  });
+import './style.scss'; // Import CSS styles
+
+const DetailStudent = ({ initialValues }) => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    studentID: '',
+    name: '',
+    dob: '',
+    sex: '',
+    address: '',
+    phoneNumber: '',
+    emailAddress: '',
+    country: '',
+  });
+
+  // Update formData with initialValues when provided
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('https://localhost:7109/api/students/All');
-      setListStudent(response.data);
-    } catch (error) {
-      console.error('Error fetching student data:', error);
+    if (initialValues) {
+      setFormData(initialValues);
     }
+  }, [initialValues]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-
-  const create = async () => {
     try {
-      await axios.post('https://localhost:7109/api/students/Create', formData);
-      fetchData();
-      setOpen(false);
+      if (initialValues) {
+        // Update existing student
+        await axios.put(`https://localhost:7109/api/students/${formData.studentID}`, formData);
+      } else {
+        // Create new student
+        await axios.post('https://localhost:7109/api/students/Create', formData);
+      }
+      // Redirect to student list after successful submission
+      navigate('/Student/pages/StudentList.jsx');
     } catch (error) {
-      console.error('Error creating student:', error);
+      console.error('Error submitting student data:', error);
+      // Handle error if needed (e.g., show error message)
     }
   };
-
-  const update = async () => {
-    try {
-      await axios.put(`https://localhost:7109/api/students/Update/${formData.StudentID}`, formData);
-      fetchData();
-      setOpen(false);
-    } catch (error) {
-      console.error('Error updating student:', error);
-    }
-  };
-
-
-
 
   return (
-    <div className="container-fluid m-0 p-0 wrap-home bg-lazy">
-   <CInputGroup className="mb-3">
-  <CInputGroupText id="studentID">{props.studentID}</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>
-
-<CInputGroup className="mb-3">
-  <CInputGroupText id="name">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>   
-<CInputGroup className="mb-3">
-  <CInputGroupText id="dob">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>   
-<CInputGroup className="mb-3">
-  <CInputGroupText id="sex">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>  
- <CInputGroup className="mb-3">
-  <CInputGroupText id="address">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup> 
-  <CInputGroup className="mb-3">
-  <CInputGroupText id="phoneNumber">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>  
- <CInputGroup className="mb-3">
-  <CInputGroupText id="emailAddress">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>
-<CInputGroup className="mb-3">
-  <CInputGroupText id="country">@</CInputGroupText>
-  <CFormInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"/>
-</CInputGroup>
+    <div className="detail-student-container">
+      <h1>{initialValues ? 'Edit Student' : 'Add New Student'}</h1>
+      <form id="studentForm" onSubmit={handleSubmit}>
+        <label>
+          Student ID:
+          <input
+            type="text"
+            name="studentID"
+            value={formData.studentID || ''}
+            onChange={handleInputChange}
+            required
+          />
+        </label>
+        <label>
+          Name:
+          <input
+            type="text"
+            name="name"
+            value={formData.name || ''}
+            onChange={handleInputChange}
+            maxLength={50}
+            required
+          />
+        </label>
+        <label>
+          Date of Birth:
+          <input
+            type="date"
+            name="dob"
+            value={formData.dob ? formData.dob.slice(0, 10) : ''}
+            onChange={handleInputChange}
+            required
+          />
+        </label>
+        <label>
+          Sex:
+          <select name="sex" value={formData.sex || ''} onChange={handleInputChange} required>
+            <option value={1}>Nữ</option>
+            <option value={0}>Nam</option>
+          </select>
+        </label>
+        <label>
+          Address:
+          <input
+            type="text"
+            name="address"
+            value={formData.address || ''}
+            onChange={handleInputChange}
+            maxLength={350}
+          />
+        </label>
+        <label>
+          Phone Number:
+          <input
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber || ''}
+            onChange={handleInputChange}
+            maxLength={11}
+          />
+        </label>
+        <label>
+          Email Address:
+          <input
+            type="email"
+            name="emailAddress"
+            value={formData.emailAddress || ''}
+            onChange={handleInputChange}
+            maxLength={350}
+          />
+        </label>
+        <label>
+          Country:
+          <input
+            type="text"
+            name="country"
+            value={formData.country || ''}
+            onChange={handleInputChange}
+            maxLength={350}
+          />
+        </label>
+        <label>
+          Image URL:
+          <input
+            type="text"
+            name="imageUrl"
+            value={formData.imageUrl || ''}
+            onChange={handleInputChange}
+            maxLength={300}
+          />
+        </label>
+      </form>
     </div>
   );
 };
 
-export default ListStudentDetalt;
+export default DetailStudent;

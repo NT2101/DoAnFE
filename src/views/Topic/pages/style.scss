@@ -55,3 +55,52 @@ border: none;
   .MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows {
     margin: 0 auto !important;
   }
+  .custom-datagrid  {
+    height: 700px;
+  }
+
+  .form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 700px; /* Điều chỉnh chiều cao theo ý muốn */
+  }
+  
+  .form-container form {
+    height: 700px;
+    width: 700px;
+    max-width: 600px; /* Điều chỉnh độ rộng tối đa của form */
+    padding: 20px;
+    margin-top: 0px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  

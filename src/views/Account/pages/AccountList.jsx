@@ -33,6 +33,38 @@ const ListAccount = () => {
     }
   };
 
+  const update = async () => {
+    setOpen(false);
+    try {
+       await axios.put(`https://localhost:7109/api/accounts1/Update?id=${formData.id}`, formData);
+      // Sau khi cập nhật thành công, gọi fetchData() để cập nhật lại danh sách sinh viên
+      fetchData();
+    } catch (error) {
+      console.error('Error updating student data:', error);
+      // Xử lý lỗi cập nhật sinh viên ở đây (có thể hiển thị thông báo lỗi cho người dùng)
+    }
+  };
+
+  const create = async () => {
+    setOpen(false);
+    try {
+      const response = await axios.post('https://localhost:7109/api/accounts1/Create', formData);
+      console.log('Response from server:', response.data);
+      fetchData();
+    } catch (error) {
+      if (error.response) {
+     
+        console.error('Error creating student:', error.response.data);
+      } else if (error.request) {
+        
+        console.error('Request error:', error.request);
+      } else {
+      
+        console.error('Error:', error.message);
+      }
+
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,7 +72,35 @@ const ListAccount = () => {
       [name]: value,
     }));
   };
-
+  const handleDialog = async (status, action, data) => {
+    switch (action) {
+      case setting.ACTION.ADD:
+        if (status === setting.ACTION.OPEN) {
+          setFormData({
+            name: '',
+            password: '',
+            roleID: '',
+            status: '',
+          });
+        }
+        break;
+      case setting.ACTION.UPDATE:
+        if (status === setting.ACTION.OPEN) {
+          setFormData(data.row);
+        } else {
+          setFormData({
+            name: '',
+            password: '',
+            roleID: '',
+            status: '',
+          });
+        }
+        break;
+      
+    }
+    setAction(action);
+    setOpen(status);
+  };
 
 
   
@@ -120,7 +180,85 @@ const ListAccount = () => {
             disableSelectionOnClick
             className="custom-datagrid"
           />
-        </div>
+        </div> <Dialog
+            open={open}
+            keepMounted
+            aria-describedby="alert-dialog-slide-description"
+          >
+            <DialogTitle>
+              {`${
+                action === setting.ACTION.ADD
+                  ? "Thêm"
+                  : action === setting.ACTION.UPDATE
+                  ? "Sửa"
+                  : "Thêm"
+              } sinh viên`}
+            </DialogTitle>
+            <DialogContent>
+            <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="name">Tên tài khoản</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
+                    placeholder="Nhập mã sinh viên"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              <div className="row">
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="password">Mật khẩu</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="password"
+                    value={formData.password}
+                    placeholder="Nhập tên sinh viên"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="roleID">Role</label>
+                  <input
+                    type="text"
+                    name="roleID"
+                    value={formData.roleID}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Nhập địa chỉ"
+                    required
+                  />
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="status">Tình trạng</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="status"
+                    value={formData.status}
+                    placeholder="Nhập số điện thoại"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>                         
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => handleDialog(setting.ACTION.CLOSE, "", {})}
+              >
+                Hủy
+              </Button>
+              {action === setting.ACTION.ADD ? (
+                <Button onClick={() => create()}>Thêm mới</Button>
+              ) : (
+                <Button onClick={() => update()}>Lưu</Button>
+              )}
+            </DialogActions>
+          </Dialog>
       </div>
      
     </div>

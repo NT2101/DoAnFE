@@ -37,22 +37,92 @@
 
     width: 45px;
     height: 45px;
-border: none; 
+    border: none; 
     outline: none;
     background: transparent;
     color:rgb(7, 11, 230);
   
 
 }
-  .btnCreate{
-    width: 45px;
-    height: 45px;
-    
-    outline: none;
-    background: transparent;
-    color:green;
-  }
-
+.btnCreate{
+  
+   margin-left: 10px ;
+   background-color: green;
+   color: white;
+   padding: 8px 16px;
+   border-radius: 4px;
+   border: none;
+   cursor: pointer;
+   width: 45px;
+   height: 45px;
+}
   .MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows {
     margin: 0 auto !important;
+  }
+
+  /* style.scss */
+
+  .detail-student-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .detail-student-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .detail-student-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail-student-container label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: black;
+  }
+  
+  .detail-student-container input,
+  .detail-student-container select {
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .detail-student-container select {
+    cursor: pointer;
+  }
+  
+  .detail-student-container button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .detail-student-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  @media (max-width: 100%) {
+    .detail-student-container {
+      width: 90%;
+      padding: 20px;
+    }
+  }
+  .custom-datagrid  {
+    height: 700px;
   }

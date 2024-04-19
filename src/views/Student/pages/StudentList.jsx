@@ -2,29 +2,29 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faPlus,faEye } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faPlus, faEye } from '@fortawesome/free-solid-svg-icons';
 import setting from '../../../setting.js';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'; // Import Dialog components
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import './style.scss';
 import { useNavigate } from 'react-router-dom';
-import ListStudentDetalt from './StudentDetail.jsx';
 
 const ListStudent = () => {
   const [listStudent, setListStudent] = useState([]);
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
-  const [formData, setFormData] = useState({
-    StudentID: '',
-    Name: '',
-    Dob: '',
-    Sex: '',
-    Address: '',
-    PhoneNumber: '',
-    EmailAddress: '',
-    Country: '',
-    ImageUrl: '',
-  });
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    studentID: '',
+    name: '',
+    dob: '',
+    sex: '',
+    address: '',
+    phoneNumber: '',
+    emailAddress: '',
+    country: '',
+    imageUrl:'',
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -38,86 +38,91 @@ const ListStudent = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-  
-    // Check if the field is 'dob' to format it as a date
-    if (name === 'dob') {
-      // Parse the datetime string into a Date object
-      const parsedDate = new Date(value);
-      
-      // Format the Date object as a string in 'YYYY-MM-DD' format
-      const formattedDate = parsedDate.toISOString().split('T')[0];
-  
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: formattedDate, // Update 'dob' field with the formatted date
-      }));
-    } else {
-      // For other fields, update the form data normally
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleDialog = (actionType, action, params) => {
-    setAction(actionType);
-    setOpen(actionType === setting.ACTION.OPEN);
-    if (action === setting.ACTION.ADD) {
-      setFormData({
-        StudentID: '',
-        Name: '',
-        Dob: '',
-        Sex: '',
-        Address: '',
-        PhoneNumber: '',
-        EmailAddress: '',
-        Country: '',
-        ImageUrl: '',
-      });
-    } else if (action === setting.ACTION.UPDATE) {
-      // setFormData({
-      //   StudentID: params.row.StudentID,
-      //   Name: params.row.Name,
-      //   Dob: params.row.Dob,
-      //   Sex: params.row.Sex,
-      //   Address: params.row.Address,
-      //   PhoneNumber: params.row.PhoneNumber,
-      //   EmailAddress: params.row.EmailAd.jsdress,
-      //   Country: params.row.Country,
-      //   ImageUrl: params.row.ImageUrl,
-      // });
-      console.log(params.row);
-      <ListStudentDetalt data={params.row}></ListStudentDetalt>
-      navigate('/Student/pages/StudentDetail.jsx');
+  const update = async () => {
+    setOpen(false);
+    try {
+       await axios.put(`https://localhost:7109/api/students/Update?studentID=${formData.studentID}`, formData);
+      // Sau khi cập nhật thành công, gọi fetchData() để cập nhật lại danh sách sinh viên
+      fetchData();
+    } catch (error) {
+      console.error('Error updating student data:', error);
+      // Xử lý lỗi cập nhật sinh viên ở đây (có thể hiển thị thông báo lỗi cho người dùng)
     }
   };
 
   const create = async () => {
+    setOpen(false);
     try {
-      await axios.post('https://localhost:7109/api/students/Create', formData);
+      const response = await axios.post('https://localhost:7109/api/students/Create', formData);
+      console.log('Response from server:', response.data);
       fetchData();
-      setOpen(false);
     } catch (error) {
-      console.error('Error creating student:', error);
+      if (error.response) {
+     
+        console.error('Error creating student:', error.response.data);
+      } else if (error.request) {
+        
+        console.error('Request error:', error.request);
+      } else {
+      
+        console.error('Error:', error.message);
+      }
+
     }
+  };
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const handleDialog = async (status, action, data) => {
+    switch (action) {
+      case setting.ACTION.ADD:
+        if (status === setting.ACTION.OPEN) {
+          setFormData({
+            studentID: '',
+            name: '',
+            dob: '',
+            sex: '',
+            address: '',
+            phoneNumber: '',
+            emailAddress: '',
+            country: '',
+            imageUrl:'',
+          });
+        }
+        break;
+      case setting.ACTION.UPDATE:
+        if (status === setting.ACTION.OPEN) {
+          setFormData(data.row);
+        } else {
+          setFormData({
+            studentID: '',
+            name: '',
+            dob: '',
+            sex: '',
+            address: '',
+            phoneNumber: '',
+            emailAddress: '',
+            country: '',
+            imageUrl:'',
+          });
+        }
+        break;
+      
+    }
+    setAction(action);
+    setOpen(status);
   };
 
-  const update = async () => {
-    try {
-      await axios.put(`https://localhost:7109/api/students/Update/${formData.StudentID}`, formData);
-      fetchData();
-      setOpen(false);
-    } catch (error) {
-      console.error('Error updating student:', error);
-    }
-  };
+  
+ 
 
   const deleteStudent = async (studentID) => {
     try {
-      await axios.delete(`https://localhost:7109/api/students/delete?id=${studentID}`);
+      await axios.delete(`https://localhost:7109/api/students/delete?studentID=${studentID}`);
       fetchData();
     } catch (error) {
       console.error('Error deleting student:', error);
@@ -147,11 +152,11 @@ const ListStudent = () => {
       ),
     },
     { field: 'studentID', headerName: 'Mã Sinh Viên', width: 130 },
-    { field: 'name', headerName: 'Họ Tên', width: 200 },
+    { field: 'name', headerName: 'Họ Tên', width: 180 },
     {
       field: 'dob',
       headerName: 'Ngày sinh',
-      width: 110,
+      width: 100,
       renderCell: (params) => {
         // Assuming params.row.dob is a valid date string or Date object
         const dob = params.row.dob;
@@ -178,9 +183,9 @@ const ListStudent = () => {
         <div>{params.row.sex === 1 ? 'Nữ' : 'Nam'}</div>
       ),
     },
-    { field: 'address', headerName: 'Địa Chỉ', width: 170 },
-    { field: 'phoneNumber', headerName: 'Số Điện Thoại', width: 150 },
-    { field: 'emailAddress', headerName: 'Email', width: 190 },
+    { field: 'address', headerName: 'Địa Chỉ', width: 200 },
+    { field: 'phoneNumber', headerName: 'Số Điện Thoại', width: 120 },
+    { field: 'emailAddress', headerName: 'Email', width: 210 },
     { field: 'country', headerName: 'Quê Quán', width: 180 },
    
   ];
@@ -208,39 +213,168 @@ const ListStudent = () => {
             className="btn-Create"
             onClick={() => handleDialog(setting.ACTION.OPEN, setting.ACTION.ADD, {})}>
             <FontAwesomeIcon className="icon-add mr-5" icon={faPlus} />
-            Thêm
+            
           </button>
         </div>
         <div className="mt-20" style={{ height: '490px', width: '100%' }}>
-        <DataGrid
-        getRowId={(row) => row.studentID}
-        rows={listStudent}
-        columns={columns}
-        pageSize={5}
-            rowsPerPageOptions={[7]}
+          <DataGrid
+            getRowId={(row) => row.studentID}
+            rows={listStudent}
+            columns={columns}
+            pageSize={5}
+            pageSizeOptions={[5, 10]}
             checkboxSelection
             disableSelectionOnClick
-        className="custom-datagrid"
-/>
+            className="custom-datagrid"
+          />
         </div>
+        <Dialog
+            open={open}
+            keepMounted
+            aria-describedby="alert-dialog-slide-description"
+          >
+            <DialogTitle>
+              {`${
+                action === setting.ACTION.ADD
+                  ? "Thêm"
+                  : action === setting.ACTION.UPDATE
+                  ? "Sửa"
+                  : "Thêm"
+              } sinh viên`}
+            </DialogTitle>
+            <DialogContent>
+            <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="studentID">Mã sinh viên</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="studentID"
+                    value={formData.studentID}
+                    placeholder="Nhập mã sinh viên"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              <div className="row">
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="name">Tên sinh viên</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
+                    placeholder="Nhập tên sinh viên"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="dob">Ngày sinh</label>
+                  <input
+                    type="date"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Nhập ngày sinh"
+                    required
+                  />
+                </div>
+                <div className="col-md-6 mt-10">
+                  <label htmlFor="sex">Giới tính</label>
+                  <select
+                    className="form-select"
+                    aria-label="Default select example"
+                    value={formData.sex}
+                    onChange={handleInputChange}
+                    name="sex"
+                  >
+                    <option value="">Chọn giới tính</option>
+                    {Object.values(setting.GENDER_STATUS).map(e => (
+                      <option key={e.code} value={e.code}>
+                        {e.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="address">Địa chỉ</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Nhập địa chỉ"
+                    required
+                  />
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="phoneNumber">Số điện thoại</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    placeholder="Nhập số điện thoại"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>            
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="emailAddress">Địa chỉ email</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="emailAddress"
+                    value={formData.emailAddress}
+                    placeholder="Nhập địa chỉ email"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div> 
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="country">Quê quán</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="country"
+                    value={formData.country}
+                    placeholder="Nhập quê quán"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>    
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="imageUrl">Link hình ảnh</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    placeholder="Nhập quê quán"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>                      
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => handleDialog(setting.ACTION.CLOSE, "", {})}
+              >
+                Hủy
+              </Button>
+              {action === setting.ACTION.ADD ? (
+                <Button onClick={() => create()}>Thêm mới</Button>
+              ) : (
+                <Button onClick={() => update()}>Lưu</Button>
+              )}
+            </DialogActions>
+          </Dialog>
+
       </div>
-      <Dialog open={open} keepMounted onClose={() => setOpen(false)}>
-        <DialogTitle>{`${action === setting.ACTION.ADD ? 'Thêm' : 'Sửa'} sinh viên`}</DialogTitle>
-        <DialogContent>
-          {/* Form inputs */}
-          {/* Example: */}
-          <input type="text" name="StudentID" value={formData.StudentID} onChange={handleInputChange} />
-          {/* Add more inputs for other fields */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Hủy</Button>
-          {action === setting.ACTION.ADD ? (
-            <Button onClick={create}>Thêm mới</Button>
-          ) : (
-            <Button onClick={update}>Lưu</Button>
-          )}
-        </DialogActions>
-      </Dialog>
+      
     </div>
   );
 };

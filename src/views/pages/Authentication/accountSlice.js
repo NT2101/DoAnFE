@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, unwrapResult } from '@reduxjs/toolkit'
-import { accountApi } from '../../api/accountApi'
+
 
 // First, create the thunk
-export const login = createAsyncThunk('accounts/login', async (payload) => {
+export const login = createAsyncThunk('https://localhost:7109/api/accounts/Login', async (payload) => {
     const data = await accountApi.get(payload.Name, payload.Password);
     // Save data to localStorage
     localStorage.setItem("USER", JSON.stringify(data.data))

@@ -41,35 +41,43 @@ const ListTeacher = () => {
       [name]: value,
     }));
   };
-
-  const handleDialog = (actionType, action, params) => {
-    setAction(actionType);
-    setOpen(actionType === setting.ACTION.OPEN);
-    if (actionType === setting.ACTION.ADD) {
-      setFormData({
-        teacherID: '',
-        name: '',
-        dob: '',
-        sex: '',
-        phoneNumber: '',
-        emailAddress: '',
-        description: '',
+  const handleDialog = async (status, action, data) => {
+    switch (action) {
+      case setting.ACTION.ADD:
+        if (status === setting.ACTION.OPEN) {
+          setFormData({
+            teacherID: '',
+            name: '',
+            dob: '',
+            sex: '',
+            phoneNumber: '',
+            emailAddress: '',
+            description: '',
+          });
+        }
+        break;
+      case setting.ACTION.UPDATE:
+        if (status === setting.ACTION.OPEN) {
+          setFormData(data.row);
+        } else {
+          setFormData({
+            teacherID: '',
+            name: '',
+            dob: '',
+            sex: '',
+            phoneNumber: '',
+            emailAddress: '',
+            description: '',
+          });
+        }
+        break;
       
-      });
-    } else if (actionType === setting.ACTION.UPDATE) {
-      setFormData({
-        teacherID: params.row.studentID,
-        name: params.row.name,
-        dob: params.row.dob,
-        sex: params.row.sex,
-        phoneNumber: params.row.phoneNumber,
-        emailAddress: params.row.emailAddress,
-        description: params.row.description,
-      
-      });
     }
+    setAction(action);
+    setOpen(status);
   };
 
+ 
   const create = async () => {
     try {
       await axios.post('https://localhost:7109/api/teachers/Create', formData);
@@ -79,10 +87,11 @@ const ListTeacher = () => {
       console.error('Error creating teacher:', error);
     }
   };
+ 
 
   const update = async () => {
     try {
-      await axios.put(`https://localhost:7109/api/teachers/Update/${formData.teacherID}`, formData);
+      await axios.put(`https://localhost:7109/api/teachers/Update?id=${formData.teacherID}`, formData);
       fetchData();
       setOpen(false);
     } catch (error) {
@@ -109,10 +118,10 @@ const ListTeacher = () => {
       width: 120,
       renderCell: (params) => (
         <div className="d-flex justify-content-center w-100">
-          <button className="btnUpdate" onClick={() => handleDialog(setting.ACTION.OPEN, setting.ACTION.UPDATE, params)}>
+         <button className="btnUpdate" onClick={() => handleDialog(setting.ACTION.OPEN, setting.ACTION.UPDATE, params)}>
             <FontAwesomeIcon icon={faEdit} />
           </button>
-          <button className="btnDelete" onClick={() => deleteStudent(params.row.studentID)}>
+          <button className="btnDelete" onClick={() => deleteStudent(params.row.teacherID)}>
             <FontAwesomeIcon icon={faTrash} />
           </button>
           <button className="btnSearch">
@@ -198,23 +207,116 @@ const ListTeacher = () => {
           />
         </div>
       </div>
-      <Dialog open={open} keepMounted onClose={() => setOpen(false)}>
-        <DialogTitle>{`${action === setting.ACTION.ADD ? 'Thêm' : 'Sửa'} giảng viên`}</DialogTitle>
-        <DialogContent>
-          {/* Form inputs */}
-          {/* Example: */}
-          <input type="text" name="studentID" value={formData.teacherID} onChange={handleInputChange} />
-          {/* Add more inputs for other fields */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Hủy</Button>
-          {action === setting.ACTION.ADD ? (
-            <Button onClick={create}>Thêm mới</Button>
-          ) : (
-            <Button onClick={update}>Lưu</Button>
-          )}
-        </DialogActions>
-      </Dialog>
+      <Dialog
+            open={open}
+            keepMounted
+            aria-describedby="alert-dialog-slide-description"
+          >
+            <DialogTitle>
+              {`${
+                action === setting.ACTION.ADD
+                  ? "Thêm"
+                  : action === setting.ACTION.UPDATE
+                  ? "Sửa"
+                  : "Thêm"
+              } giảng viên`}
+            </DialogTitle>
+            <DialogContent>
+              <div className="row">
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="name">Tên sinh viên</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
+                    placeholder="Nhập tên giảng viên"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="dob">Ngày sinh</label>
+                  <input
+                    type="date"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Nhập ngày sinh"
+                    required
+                  />
+                </div>
+                <div className="col-md-6 mt-10">
+                  <label htmlFor="sex">Giới tính</label>
+                  <select
+                    className="form-select"
+                    aria-label="Default select example"
+                    value={formData.sex}
+                    onChange={handleInputChange}
+                    name="sex"
+                  >
+                    <option value="">Chọn giới tính</option>
+                    {Object.values(setting.GENDER_STATUS).map(e => (
+                      <option key={e.code} value={e.code}>
+                        {e.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="phoneNumber">Số điện thoại</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    placeholder="Nhập số điện thoại"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>            
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="emailAddress">Địa chỉ email</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="emailAddress"
+                    value={formData.emailAddress}
+                    placeholder="Nhập địa chỉ email"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div> 
+                <div className="form-group mt-10 col-md-6">
+                  <label htmlFor="description">Mô tả</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="description"
+                    value={formData.description}
+                    placeholder="Nhập mô tả"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>    
+                             
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => handleDialog(setting.ACTION.CLOSE, "", {})}
+              >
+                Hủy
+              </Button>
+              {action === setting.ACTION.ADD ? (
+                <Button onClick={() => create()}>Thêm mới</Button>
+              ) : (
+                <Button onClick={() => update()}>Lưu</Button>
+              )}
+            </DialogActions>
+          </Dialog>
+
     </div>
   );
 };

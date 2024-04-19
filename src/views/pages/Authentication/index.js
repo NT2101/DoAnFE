@@ -23,7 +23,6 @@ import { cilLockLocked, cilUser } from '@coreui/icons';
 const Login = () => {
   const [UserName, setUserName] = useState('');
   const [Password, setPassword] = useState('');
-  const [ErrorString, setErrorString] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -37,18 +36,17 @@ const Login = () => {
           Password: Password,
         },
       });
-
-      
       if (response.status === 200) {
         console.log("ss")
         // Redirect to Home or perform other actions upon successful login
-        navigate('/dashboard');
+        navigate('/ChangePassword');
       }
     } catch (error) {
       console.error("Error:", error);
       // Handle error here
     }
   };
+
 
   return (
     

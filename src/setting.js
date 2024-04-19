@@ -39,7 +39,6 @@ const URL_API = {
 const ACTION = {
   ADD: "add",
   UPDATE: "update",
-  DELETE: "delete",
   OPEN: true,
   CLOSE: false,
 };
